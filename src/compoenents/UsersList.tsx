@@ -1,35 +1,41 @@
-import { type FC, useMemo, useState } from 'react'
+import { type FC, useState } from 'react'
 import {
+	createAppSelector,
 	useAppDispatch,
 	useAppSelector,
+	type AppState,
 	type User,
 	type UserRemoveSelectedAction,
 	type UserSelectedAction
 } from '../store.ts'
 
+const selectSortedUsers = createAppSelector(
+	(state: AppState) => state.users.ids,
+	(state: AppState) => state.users.entities,
+	(_: AppState, sort: 'asc' | 'desc') => sort,
+	(ids, entities, sort) =>
+		ids
+			.map(id => entities[id])
+			.sort((a, b) => {
+				if (sort === 'asc') {
+					return a.name.localeCompare(b.name)
+				} else {
+					return b.name.localeCompare(a.name)
+				}
+			})
+)
+
+const selectSelectedUser = (state: AppState) =>
+	state.users.selectedUerId
+		? state.users.entities[state.users.selectedUerId]
+		: undefined
+
 export const UsersList = () => {
 	const [sortType, setSortType] = useState<'asc' | 'desc'>('asc')
 
-	const ids = useAppSelector(state => state.users.ids)
-	const entities = useAppSelector(state => state.users.entities)
-	const selectedUser = useAppSelector(state =>
-		state.users.selectedUerId
-			? state.users.entities[state.users.selectedUerId]
-			: undefined
-	)
-
-	const sortedUsers = useMemo(
-		() =>
-			ids
-				.map(id => entities[id])
-				.sort((a, b) => {
-					if (sortType === 'asc') {
-						return a.name.localeCompare(b.name)
-					} else {
-						return b.name.localeCompare(a.name)
-					}
-				}),
-		[ids, entities, sortType]
+	const selectedUser = useAppSelector(state => selectSelectedUser(state))
+	const sortedUsers = useAppSelector(state =>
+		selectSortedUsers(state, sortType)
 	)
 
 	return (
