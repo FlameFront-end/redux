@@ -1,34 +1,14 @@
 import { type FC, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '../../store.ts'
 import {
-	createAppSelector,
-	useAppDispatch,
-	useAppSelector,
-	type AppState,
 	type User,
 	type UserRemoveSelectedAction,
 	type UserSelectedAction
-} from '../store.ts'
-
-const selectSortedUsers = createAppSelector(
-	(state: AppState) => state.users.ids,
-	(state: AppState) => state.users.entities,
-	(_: AppState, sort: 'asc' | 'desc') => sort,
-	(ids, entities, sort) =>
-		ids
-			.map(id => entities[id])
-			.sort((a, b) => {
-				if (sort === 'asc') {
-					return a.name.localeCompare(b.name)
-				} else {
-					return b.name.localeCompare(a.name)
-				}
-			})
-)
-
-const selectSelectedUser = (state: AppState) =>
-	state.users.selectedUerId
-		? state.users.entities[state.users.selectedUerId]
-		: undefined
+} from './store/users.slice.ts'
+import {
+	selectSelectedUser,
+	selectSortedUsers
+} from './store/users.selectors.ts'
 
 export const UsersList = () => {
 	const [sortType, setSortType] = useState<'asc' | 'desc'>('asc')

@@ -1,10 +1,7 @@
-import {
-	type DecrementAction,
-	type IncrementAction,
-	useAppSelector
-} from '../store'
-import { useDispatch } from 'react-redux'
 import type { FC } from 'react'
+import { useDispatch } from 'react-redux'
+import type { DecrementAction, IncrementAction } from './counters.slice.ts'
+import { useAppSelector } from '../../store.ts'
 
 export const Counters = () => {
 	return (
@@ -22,8 +19,6 @@ interface CounterProps {
 export const Counter: FC<CounterProps> = ({ counterId }) => {
 	const dispatch = useDispatch()
 	const counterState = useAppSelector(state => state.counters[counterId])
-
-	console.log('render counter', counterId)
 
 	return (
 		<div className='flex flex-row items-center justify-center gap-5 '>

@@ -1,5 +1,5 @@
-import { Counters } from './compoenents/Counters.tsx'
-import { UsersList } from './compoenents/UsersList.tsx'
+import { Counters } from './modules/counters/Counters.tsx'
+import { UsersList } from './modules/users/UsersList.tsx'
 
 function App() {
 	return (

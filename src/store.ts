@@ -4,156 +4,12 @@ import {
 	createSelector
 } from '@reduxjs/toolkit'
 import { useDispatch, useSelector, useStore } from 'react-redux'
-
-export type UserId = string
-export type User = {
-	id: UserId
-	name: string
-	description: string
-}
-
-export const users: User[] = Array.from({ length: 3000 }, (_, index) => ({
-	id: `user${index + 11}`,
-	name: `User ${index + 11}`,
-	description: `Description for User ${index + 11}`
-}))
-
-type UsersState = {
-	entities: Record<UserId, User>
-	ids: UserId[]
-	selectedUerId: UserId | undefined
-}
-
-type CounterState = {
-	counter: number
-}
-
-type CountersState = Record<CounterId, CounterState | undefined>
-
-export type CounterId = string
-
-export type UserSelectedAction = {
-	type: 'userSelected'
-	payload: {
-		userId: UserId
-	}
-}
-
-export type UserRemoveSelectedAction = {
-	type: 'userRemoveSelected'
-	payload: {
-		userId: UserId
-	}
-}
-
-export type UsersStoredAction = {
-	type: 'usersStored'
-	payload: {
-		users: User[]
-	}
-}
-
-export type IncrementAction = {
-	type: 'increment'
-	payload: {
-		counterId: CounterId
-	}
-}
-
-export type DecrementAction = {
-	type: 'decrement'
-	payload: {
-		counterId: CounterId
-	}
-}
-
-type Action =
-	| IncrementAction
-	| DecrementAction
-	| UserSelectedAction
-	| UserRemoveSelectedAction
-	| UsersStoredAction
-
-const initialCounterState: CounterState = { counter: 0 }
-const initialCountersState: CountersState = {}
-const initialUsersState: UsersState = {
-	entities: {},
-	ids: [],
-	selectedUerId: undefined
-}
-
-const usersReducer = (
-	state = initialUsersState,
-	action: Action
-): UsersState => {
-	switch (action.type) {
-		case 'usersStored': {
-			const { users } = action.payload
-			return {
-				...state,
-				entities: users.reduce(
-					(acc, user) => {
-						acc[user.id] = user
-						return acc
-					},
-					{} as Record<UserId, User>
-				),
-				ids: users.map(user => user.id)
-			}
-		}
-		case 'userSelected': {
-			const { userId } = action.payload
-			return {
-				...state,
-				selectedUerId: userId
-			}
-		}
-		case 'userRemoveSelected': {
-			return {
-				...state,
-				selectedUerId: undefined
-			}
-		}
-
-		default:
-			return state
-	}
-}
-
-const countersReducer = (
-	state = initialCountersState,
-	action: Action
-): CountersState => {
-	switch (action.type) {
-		case 'increment': {
-			const { counterId } = action.payload
-			const currentCounter = state[counterId] ?? initialCounterState
-
-			return {
-				...state,
-				[counterId]: {
-					...currentCounter,
-					counter: currentCounter.counter + 1
-				}
-			}
-		}
-		case 'decrement': {
-			const { counterId } = action.payload
-			const currentCounter = state[counterId] ?? initialCounterState
-
-			return {
-				...state,
-				[counterId]: {
-					...currentCounter,
-					counter: currentCounter.counter - 1
-				}
-			}
-		}
-
-		default:
-			return state
-	}
-}
+import {
+	initialUsersList,
+	usersReducer,
+	type UsersStoredAction
+} from './modules/users/store/users.slice.ts'
+import { countersReducer } from './modules/counters/counters.slice'
 
 const reducer = combineReducers({
 	users: usersReducer,
@@ -161,13 +17,12 @@ const reducer = combineReducers({
 })
 
 export const store = configureStore({
-	reducer: reducer,
-	devTools: true
+	reducer: reducer
 })
 
 store.dispatch({
 	type: 'usersStored',
-	payload: { users }
+	payload: { users: initialUsersList }
 } satisfies UsersStoredAction)
 
 export type AppState = ReturnType<typeof store.getState>
