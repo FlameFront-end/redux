@@ -2,13 +2,10 @@ import { type FC, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../store.ts'
 import {
 	type User,
-	type UserRemoveSelectedAction,
-	type UserSelectedAction
+	userRemoveSelectedAction,
+	userSelectedAction
 } from './store/users.slice.ts'
-import {
-	selectSelectedUser,
-	selectSortedUsers
-} from './store/users.selectors.ts'
+import { selectSelectedUser, selectSortedUsers } from './store/selectors.ts'
 
 export const UsersList = () => {
 	const [sortType, setSortType] = useState<'asc' | 'desc'>('asc')
@@ -56,17 +53,12 @@ interface UserListItemProps {
 const UserListItem: FC<UserListItemProps> = ({ user }) => {
 	const dispatch = useAppDispatch()
 
-	const handleUserClick = () => {
-		dispatch({
-			type: 'userSelected',
-			payload: {
-				userId: user.id
-			}
-		} satisfies UserSelectedAction)
-	}
-
 	return (
-		<li key={user.id} className='py-2' onClick={handleUserClick}>
+		<li
+			key={user.id}
+			className='py-2'
+			onClick={() => dispatch(userSelectedAction({ userId: user.id }))}
+		>
 			<span className='hover:underline cursor-pointer'>{user.name}</span>
 		</li>
 	)
@@ -79,19 +71,12 @@ interface SelectedUserProps {
 const SelectedUser: FC<SelectedUserProps> = ({ user }) => {
 	const dispatch = useAppDispatch()
 
-	const handleBackButtonClick = () => {
-		dispatch({
-			type: 'userRemoveSelected',
-			payload: {
-				userId: user.id
-			}
-		} satisfies UserRemoveSelectedAction)
-	}
-
 	return (
 		<div className='flex flex-col items-center'>
 			<button
-				onClick={handleBackButtonClick}
+				onClick={() =>
+					dispatch(userRemoveSelectedAction({ userId: user.id }))
+				}
 				className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded md'
 			>
 				Back

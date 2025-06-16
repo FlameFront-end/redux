@@ -4,12 +4,12 @@ import {
 	createSelector
 } from '@reduxjs/toolkit'
 import { useDispatch, useSelector, useStore } from 'react-redux'
+import { countersReducer } from './modules/counters/counters.slice'
 import {
 	initialUsersList,
 	usersReducer,
-	type UsersStoredAction
+	usersStoredAction
 } from './modules/users/store/users.slice.ts'
-import { countersReducer } from './modules/counters/counters.slice'
 
 const reducer = combineReducers({
 	users: usersReducer,
@@ -20,10 +20,7 @@ export const store = configureStore({
 	reducer: reducer
 })
 
-store.dispatch({
-	type: 'usersStored',
-	payload: { users: initialUsersList }
-} satisfies UsersStoredAction)
+store.dispatch(usersStoredAction({ users: initialUsersList }))
 
 export type AppState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
