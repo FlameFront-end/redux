@@ -1,26 +1,16 @@
-import {
-	combineReducers,
-	configureStore,
-	createSelector
-} from '@reduxjs/toolkit'
+import { configureStore, createSelector } from '@reduxjs/toolkit'
 import { useDispatch, useSelector, useStore } from 'react-redux'
-import { countersReducer } from './modules/counters/counters.slice'
-import {
-	initialUsersList,
-	usersReducer,
-	usersStoredAction
-} from './modules/users/store/users.slice.ts'
-
-const reducer = combineReducers({
-	users: usersReducer,
-	counters: countersReducer
-})
+import { countersSlice } from './modules/counters/counters.slice'
+import { initialUsersList, usersSlice } from './modules/users/users.slice.ts'
 
 export const store = configureStore({
-	reducer: reducer
+	reducer: {
+		[countersSlice.name]: countersSlice.reducer,
+		[usersSlice.name]: usersSlice.reducer
+	}
 })
 
-store.dispatch(usersStoredAction({ users: initialUsersList }))
+store.dispatch(usersSlice.actions.stored({ users: initialUsersList }))
 
 export type AppState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
